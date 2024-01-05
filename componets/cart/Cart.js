@@ -14,7 +14,7 @@ export default function Cart({navigation,navigateToProductDetail}) {
         if (cartData) {
           const parsedCart = JSON.parse(cartData);
   
-          // Kiểm tra và đặt số lượng thành 1 nếu nó là 0 hoặc không tồn tại
+        
           const updatedCart = parsedCart.map(item => ({
             ...item,
             quantity: item.quantity || 1,
@@ -31,15 +31,17 @@ export default function Cart({navigation,navigateToProductDetail}) {
   }, []);
 
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    const total = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return total.toFixed(2); // Làm tròn đến 2 chữ số thập phân
   };
+  
 
   const handleDeleteItem = (itemId) => {
-    // Xóa sản phẩm khỏi giỏ hàng
+
     const updatedCart = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedCart);
 
-    // Lưu giỏ hàng mới vào AsyncStorage
+   
     AsyncStorage.setItem('cart', JSON.stringify(updatedCart))
       .then(() => {
         console.log('Sản phẩm đã được xóa khỏi giỏ hàng');
@@ -49,10 +51,10 @@ export default function Cart({navigation,navigateToProductDetail}) {
       });
   };
   const handleDecreaseQuantity = (itemId) => {
-  // Giảm số lượng của sản phẩm trong giỏ hàng
+
   const updatedCart = cartItems.map(item => {
     if (item.id === itemId) {
-      // Đảm bảo số lượng không nhỏ hơn 1
+      
       const newQuantity = Math.max(1, item.quantity - 1);
       return { ...item, quantity: newQuantity };
     }
@@ -61,7 +63,7 @@ export default function Cart({navigation,navigateToProductDetail}) {
 
   setCartItems(updatedCart);
 
-  // Lưu giỏ hàng mới vào AsyncStorage
+
   AsyncStorage.setItem('cart', JSON.stringify(updatedCart))
     .then(() => {
       console.log('Số lượng sản phẩm đã được giảm');
@@ -72,7 +74,7 @@ export default function Cart({navigation,navigateToProductDetail}) {
 };
 
   const handleIncreaseQuantity = (itemId) => {
-    // Tăng số lượng của sản phẩm trong giỏ hàng
+
     const updatedCart = cartItems.map(item => {
       if (item.id === itemId) {
         return { ...item, quantity: item.quantity + 1 };
@@ -81,7 +83,7 @@ export default function Cart({navigation,navigateToProductDetail}) {
     });
     setCartItems(updatedCart);
 
-    // Lưu giỏ hàng mới vào AsyncStorage
+
     AsyncStorage.setItem('cart', JSON.stringify(updatedCart))
       .then(() => {
         console.log('Số lượng sản phẩm đã được tăng');
@@ -91,10 +93,10 @@ export default function Cart({navigation,navigateToProductDetail}) {
       });
   };
   const handleReduceQuantity = (itemId) => {
-  // Giảm số lượng của sản phẩm trong giỏ hàng
+
   const updatedCart = cartItems.map(item => {
     if (item.id === itemId) {
-      // Đảm bảo số lượng không nhỏ hơn 1
+   
       const newQuantity = Math.max(1, item.quantity - 1);
       return { ...item, quantity: newQuantity };
     }
@@ -102,8 +104,12 @@ export default function Cart({navigation,navigateToProductDetail}) {
   });
 
   setCartItems(updatedCart);
+  const navigateToProductDetail = (item) => {
+   
+    navigation.navigate('ProductDetail', { item });
+  };
 
-  // Lưu giỏ hàng mới vào AsyncStorage
+
   AsyncStorage.setItem('cart', JSON.stringify(updatedCart))
     .then(() => {
       console.log('Số lượng sản phẩm đã được giảm');
@@ -125,7 +131,7 @@ return (
         data={cartItems}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          // <TouchableOpacity onPress={() => navigateToProductDetail(item)}>
+          <TouchableOpacity onPress={() => navigateToProductDetail(item)}>
           <View style={styles.cartItem}>
 
             <Image source={{ uri: item.image }} style={styles.productImage} />
@@ -157,7 +163,7 @@ return (
               </View>
             </View>
           </View>
-          // </TouchableOpacity>
+           </TouchableOpacity>
         )}
       />
     ) : (

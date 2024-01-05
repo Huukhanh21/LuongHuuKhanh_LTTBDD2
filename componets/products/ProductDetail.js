@@ -9,14 +9,9 @@ export default function ProductDetail({ route,navigation }) {
 
   const addToCart = async (product) => {
     try {
-      // Đọc giỏ hàng hiện tại từ AsyncStorage
       const existingCart = await AsyncStorage.getItem('cart');
       const cart = existingCart ? JSON.parse(existingCart) : [];
-
-      // Thêm sản phẩm vào giỏ hàng
       cart.push(product);
-
-      // Lưu giỏ hàng mới vào AsyncStorage
       await AsyncStorage.setItem('cart', JSON.stringify(cart));
 
       console.log('Sản phẩm đã được thêm vào giỏ hàng thành công!');

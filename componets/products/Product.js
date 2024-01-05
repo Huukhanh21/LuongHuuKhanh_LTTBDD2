@@ -16,7 +16,7 @@ const Product = ({ navigation, navigateToProductDetail, addToCart }) => {
     axios
       .get('https://fakestoreapi.com/products')
       .then(function (response) {
-        setData(response.data);
+        setData(response.data); 
       })
       .catch(function (error) {
         alert(error.message);
@@ -44,8 +44,7 @@ const Product = ({ navigation, navigateToProductDetail, addToCart }) => {
 
   const truncateTitle = (title) => {
     const maxLines = 2;
-    const maxCharsPerLine = 15; // Số ký tự tối đa trên mỗi dòng
-
+    const maxCharsPerLine = 15; 
     const lines = title.split('\n');
     if (lines.length > maxLines) {
       return lines.slice(0, maxLines).join('\n') + '...';
