@@ -9,6 +9,9 @@ export default function Header({ navigation }) {
       <TouchableOpacity onPress={() => navigation.dispatch(CommonActions.goBack())}>
         <Icon name="chevron-left" size={20} color="black" />
       </TouchableOpacity>
+
+       
+
       <StatusBar style="auto" />
     </View>
   );

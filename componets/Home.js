@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, Text, View,TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Footer from './Footer';
-import Header from './Header';
+import Search from './Search';
 import Newproduct from './products/Newproduct';
 import Product from './products/Product';
 import Banner from './products/Banner';
@@ -15,9 +15,9 @@ export default function Home({ navigation }) {
   };
   return (
     <View style={styles.container}>
-    {/* //  <View style={styles.header}>
-    //     <Header navigation={navigation} />
-    //   </View>  */}
+      <View style={styles.header}>
+        <Search/>
+      </View> 
 
       <ScrollView>
 

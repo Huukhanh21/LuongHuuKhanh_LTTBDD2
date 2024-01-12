@@ -25,6 +25,7 @@ const Product = ({ navigation, navigateToProductDetail, addToCart }) => {
         console.log('Finally called');
       });
   };
+
   // useEffect(() => {
   //   GET_ALL("products").then((response) => {
   //     const responseData = response.data;

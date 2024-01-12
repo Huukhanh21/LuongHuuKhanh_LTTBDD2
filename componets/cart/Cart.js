@@ -32,7 +32,7 @@ export default function Cart({navigation,navigateToProductDetail}) {
 
   const calculateTotalPrice = () => {
     const total = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    return total.toFixed(2); // Làm tròn đến 2 chữ số thập phân
+    return total.toFixed(2); 
   };
   
 
@@ -103,6 +103,7 @@ export default function Cart({navigation,navigateToProductDetail}) {
     return item;
   });
 
+
   setCartItems(updatedCart);
   const navigateToProductDetail = (item) => {
    
@@ -117,7 +118,9 @@ export default function Cart({navigation,navigateToProductDetail}) {
     .catch((error) => {
       console.error('Lỗi khi lưu giỏ hàng mới:', error);
     });
+    
 };
+
 
 
 return (
@@ -131,7 +134,7 @@ return (
         data={cartItems}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigateToProductDetail(item)}>
+          // <TouchableOpacity onPress={() => navigateToProductDetail(item)}>
           <View style={styles.cartItem}>
 
             <Image source={{ uri: item.image }} style={styles.productImage} />
@@ -163,7 +166,7 @@ return (
               </View>
             </View>
           </View>
-           </TouchableOpacity>
+          //  </TouchableOpacity>
         )}
       />
     ) : (

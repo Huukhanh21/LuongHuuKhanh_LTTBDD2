@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../Header';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -25,21 +25,29 @@ export default function ProductDetail({ route,navigation }) {
             <View style={styles.header}>
         <Header navigation={navigation} />
       </View>
+      <ScrollView>
       <View style={styles.image}>
         <Image source={{ uri: item.image }} style={styles.productImage} />
+        
       </View>
      
-      <Text style={styles.productTitle}>{item.title}</Text>
+      {/* <Text style={styles.productTitle}>{item.title}</Text>
       <Text style={styles.productPrice}>Giá tiền: ${item.price}</Text>
       <Text style={styles.productDescription}>{item.description}</Text>
-      <Text style={styles.productCategory}>Danh mục: {item.category}</Text>
-    
+      <Text style={styles.productCategory}>Danh mục: {item.category}</Text> */}
+
+      <Text style={styles.productTitle}>{item.title.toString()}</Text>
+      <Text style={styles.productPrice}>Giá tiền: ${item.price.toString()}</Text>
+      <Text style={styles.productDescription}>{item.description.toString()}</Text>
+      <Text style={styles.productCategory}>Danh mục: {item.category.toString()}</Text> 
+      </ScrollView>
       <TouchableOpacity
         style={styles.addToCartButton}
         onPress={() => addToCart(item)}
       >
         <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
       </TouchableOpacity>
+     
     </View>
   );
 }

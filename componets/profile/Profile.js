@@ -12,11 +12,11 @@ export default function Profile({ navigation }) {
       <View style={styles.profileInfoContainer}>
         <Image
           style={styles.profileImage}
-          source={{ uri: 'https://placekitten.com/200/200' }} // Replace with your user's profile picture URL
+          source={{ uri: 'https://placekitten.com/200/200' }} 
         />
-        <Text style={styles.userName}>John Doe</Text>
-        <Text style={styles.userInfo}>Web Developer</Text>
-        <Text style={styles.userInfo}>Location: New ork</Text>
+        <Text style={styles.userName}>Hữu Khánh</Text>
+        <Text style={styles.userInfo}>Game Developer</Text>
+        <Text style={styles.userInfo}>Location: VietNam</Text>
         <TouchableOpacity style={styles.editButton}>
           <Icon name="pencil" size={20} color="#fff" />
           <Text style={styles.editButtonText}>Edit Profile</Text>
