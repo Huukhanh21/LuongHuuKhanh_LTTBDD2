@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity,
      KeyboardAvoidingView, ImageBackground } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Platform } from 'react-native';
 
 function Login({ navigation }) {
   return (

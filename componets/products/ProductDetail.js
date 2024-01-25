@@ -11,9 +11,19 @@ export default function ProductDetail({ route,navigation }) {
     try {
       const existingCart = await AsyncStorage.getItem('cart');
       const cart = existingCart ? JSON.parse(existingCart) : [];
-      cart.push(product);
+      
+      const existingProductIndex = cart.findIndex(item => item.id === product.id);
+  
+      if (existingProductIndex !== -1) {
+        // Nếu sản phẩm đã tồn tại, tăng số lượng lên 1 đơn vị
+        cart[existingProductIndex].quantity += 1;
+      } else {
+        // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào giỏ hàng
+        cart.push({ ...product, quantity: 1 });
+      }
+  
       await AsyncStorage.setItem('cart', JSON.stringify(cart));
-
+  
       console.log('Sản phẩm đã được thêm vào giỏ hàng thành công!');
     } catch (error) {
       console.error('Lỗi khi thêm vào giỏ hàng:', error);
@@ -42,11 +52,12 @@ export default function ProductDetail({ route,navigation }) {
       <Text style={styles.productCategory}>Danh mục: {item.category.toString()}</Text> 
       </ScrollView>
       <TouchableOpacity
-        style={styles.addToCartButton}
-        onPress={() => addToCart(item)}
+      style={styles.addToCartButton}
+      onPress={() => addToCart(item)}
       >
-        <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
-      </TouchableOpacity>
+      <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
+    </TouchableOpacity>
+
      
     </View>
   );

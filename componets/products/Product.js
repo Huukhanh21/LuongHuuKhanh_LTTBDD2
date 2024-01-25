@@ -1,22 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, FlatList, Image, TouchableOpacity, Dimensions, Modal } from 'react-native';
 import axios from 'axios';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { GET_ALL, GET_IMG } from '../../api/apiService';
+import { Ionicons } from '@expo/vector-icons';
 
 const Product = ({ navigation, navigateToProductDetail, addToCart }) => {
-  const [data, setData] = useState([]);
-  const [numColumns, setNumColumns] = useState(2);
+  const [data, setData] = useState(null);
+  const [search, setSearch] = useState('');
+  const [originalData, setOriginalData] = useState(null);
+  const SearchRef = useRef(null);
+  const windowWidth = Dimensions.get('window').width;
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [sortOrder, setSortOrder] = useState('asc');
+
 
   useEffect(() => {
     getDataUsingSimpleGetCall();
   }, []);
 
+  useEffect(() => {
+    if (search === '') {
+      setData(originalData);
+    } else {
+      onSearch(search);
+    }
+  }, [search]);
+
   const getDataUsingSimpleGetCall = () => {
     axios
       .get('https://fakestoreapi.com/products')
       .then(function (response) {
-        setData(response.data); 
+        setData(response.data);
+        setOriginalData(response.data); 
       })
       .catch(function (error) {
         alert(error.message);
@@ -25,63 +39,80 @@ const Product = ({ navigation, navigateToProductDetail, addToCart }) => {
         console.log('Finally called');
       });
   };
-
-  // useEffect(() => {
-  //   GET_ALL("products").then((response) => {
-  //     const responseData = response.data;
-  //     if (responseData && Array.isArray(responseData.content)) {
-  //       setData(responseData.content);
-  //     }
-  //     else {
-  //       console.error("Data received from the API is not a supported format.");
-  //     }
-  //     setIsLoading(false);
-  //   }).catch((error) => {
-  //     console.error("Error fetching data:", error);
-  //     setIsLoading(false);
-  //   });
-  // }, []);
+ 
 
 
-  const truncateTitle = (title) => {
-    const maxLines = 2;
-    const maxCharsPerLine = 15; 
-    const lines = title.split('\n');
-    if (lines.length > maxLines) {
-      return lines.slice(0, maxLines).join('\n') + '...';
+  const onSearch = text => {
+    if (text === '') {
+      setData(originalData);
+    } else {
+      let tempList = originalData.filter(item => {
+        return item.title.toLowerCase().indexOf(text.toLowerCase()) > -1;
+      });
+      setData(tempList);
     }
-
-    const chars = title.split('');
-    let currentLine = 0;
-    let currentChars = 0;
-    const truncatedChars = chars.reduce((acc, char) => {
-      if (char === '\n' || currentChars >= maxCharsPerLine) {
-        currentLine += 1;
-        currentChars = 0;
+  };
+  const openModal = () => {
+    setModalVisible(true);
+  };
+  
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+  const sortProductsByName = () => {
+    const sortedData = [...data]; 
+    sortedData.sort((a, b) => {
+      const nameA = a.title.toUpperCase();
+      const nameB = b.title.toUpperCase();
+  
+      if (sortOrder === 'asc') {
+        return nameA.localeCompare(nameB);
+      } else {
+        return nameB.localeCompare(nameA);
       }
-
-      if (currentLine < maxLines) {
-        currentChars += 1;
-        return acc + char;
-      }
-
-      return acc;
-    }, '');
-
-    return truncatedChars;
+    });
+  
+    setData(sortedData);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    closeModal();
   };
 
-  const renderItem = ({ item }) => {
-    const truncatedTitle = truncateTitle(item.title);
+  const sortProductsByPriceAscending = () => {
+    const sortedData = [...data];
+    sortedData.sort((a, b) => a.price - b.price);
+  
+    setData(sortedData);
+    closeModal();
+  };
+  
+  const sortProductsByPriceDescending = () => {
+    const sortedData = [...data];
+    sortedData.sort((a, b) => b.price - a.price);
+  
+    setData(sortedData);
+    closeModal();
+  };
 
-    return (
-      <TouchableOpacity onPress={() => navigateToProductDetail(item)}>
+  const sortProductsByRateDescending = () => {
+    const sortedData = [...data];
+    sortedData.sort((a, b) => b.rating.rate - a.rating.rate);
+  
+    setData(sortedData);
+    closeModal();
+  };
+  
+  
+
+
+  const renderItem = ({ item }) => (
+    
+    <TouchableOpacity onPress={() => navigateToProductDetail(item)}>
     
         <View style={styles.productItem}>
         {/* <Image source={{ uri: GET_IMG('products', item.photo) }} style={styles.productImage} /> */}
         <Image source={{ uri: item.image }} style={styles.productImage} />
           <View style={styles.productInfo}>
-            <Text style={styles.productName}>{truncatedTitle}</Text>
+            <Text style={styles.productName}>{item.title}</Text>
             <Text style={styles.productPrice}>$ {item.price}</Text>
             <View style={styles.ratingContainer}>
         <Text style={styles.productRating}>Đánh giá: </Text>
@@ -91,23 +122,75 @@ const Product = ({ navigation, navigateToProductDetail, addToCart }) => {
           </View>
         </View>
       </TouchableOpacity>
-    );
-  };
-
-  const keyExtractor = (item, index) => index.toString();
+  );
 
   return (
     <SafeAreaView style={styles.scrollContainer}>
-      <View style={styles.home}>
-       
-        <FlatList
-          key={numColumns}
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          numColumns={numColumns}
-        />
-      </View>
+      <View style={styles.searchContainer}>
+  <View style={styles.searchInputContainer}>
+    <TextInput
+      ref={SearchRef}
+      style={styles.searchInput}
+      placeholder="Bạn đang tìm gì? "
+      value={search}
+      onChangeText={txt => {
+        setSearch(txt);
+      }}
+    />
+    <Ionicons name="search" size={24} color="black" style={styles.searchIcon} />
+  </View>
+  {search === '' ? null : (
+    <TouchableOpacity
+      style={styles.clearButton}
+      onPress={() => {
+        SearchRef.current.clear();
+        setSearch('');
+      }}
+    />
+  )}
+  <TouchableOpacity onPress={openModal}>
+  <Image
+    source={require('../../assets/filter-32.png')}
+    style={styles.filter}
+  />
+</TouchableOpacity>
+
+</View>
+
+
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+        numColumns={2}
+        contentContainerStyle={styles.home}
+      />
+
+<Modal
+  visible={isModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={closeModal}
+>
+  <View style={styles.modalContainer}>
+  <TouchableOpacity onPress={sortProductsByName}>
+  <Text style={styles.textsort}>Theo tên</Text>
+</TouchableOpacity>
+
+<TouchableOpacity onPress={sortProductsByPriceAscending}>
+  <Text style={styles.textsort}>Giá tăng dần</Text>
+</TouchableOpacity>
+
+<TouchableOpacity onPress={sortProductsByPriceDescending}>
+  <Text style={styles.textsort}>Giá giảm dần</Text>
+</TouchableOpacity>
+
+    <TouchableOpacity onPress={sortProductsByRateDescending}>
+      <Text style={styles.textsort}>Đánh giá cao</Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
+
     </SafeAreaView>
   );
 };
@@ -131,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor:'white',
     margin:3,
-    width:180,
+    width:190,
     height:270,
     
 
@@ -175,6 +258,57 @@ const styles = StyleSheet.create({
   ratingCount: {
     fontSize: 12,
     color: 'gray',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    marginLeft:10,
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+  },  
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    marginLeft: 8,
+  },
+  searchIcon: {
+    marginLeft: 8,
+  },
+  clearButton: {
+    marginLeft: 8,
+    backgroundColor: '#95a5a6',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  filter: {
+    width: 40, 
+    height: 40, 
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  textsort: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'white',
+    textAlign: 'center',
   },
 });
 
